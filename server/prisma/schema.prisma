@@ -1,0 +1,200 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String             @id @default(uuid())
+  email        String             @unique
+  password     String
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  profile      Profile?
+  workouts     Workout[]
+  sessions     WorkoutSession[]
+  dietNotes    DietNote[]
+  waterLogs    WaterIntake[]
+  weightLogs   WeightRecord[]
+  habits       Habit[]
+  sleepLogs    SleepRecord[]
+  goals        Goal[]
+  photos       ProgressPhoto[]
+  journals     Journal[]
+  settings     NotificationSettings?
+}
+
+model Profile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name             String   @default("Fitness Enthusiast")
+  age              Int      @default(25)
+  gender           String   @default("Other")
+  height           Float    @default(170) // in cm
+  weight           Float    @default(70)  // in kg
+  fitnessGoal      String   @default("Maintain Weight")
+  targetWeight     Float    @default(68)  // in kg
+  dailyCalorieGoal Int      @default(2200)
+  avatarUrl        String?
+  unitSystem       String   @default("metric")
+  theme            String   @default("dark")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Workout {
+  id          String     @id @default(uuid())
+  userId      String
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  category    String     @default("Custom")
+  description String?
+  exercises   Exercise[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Exercise {
+  id          String   @id @default(uuid())
+  workoutId   String
+  workout     Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  name        String
+  muscleGroup String   @default("Full Body")
+  sets        Int      @default(3)
+  reps        Int      @default(10)
+  weight      Float    @default(0)
+  duration    Int      @default(0)
+  restTime    Int      @default(60)
+  notes       String?
+  metValue    Float    @default(5.0)
+}
+
+model WorkoutSession {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutName     String
+  category        String   @default("Custom")
+  durationSeconds Int      @default(0)
+  caloriesBurned  Float    @default(0)
+  date            String   // YYYY-MM-DD
+  notes           String?
+  createdAt       DateTime @default(now())
+}
+
+model DietNote {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealType  String
+  foodName  String
+  quantity  String   @default("1 serving")
+  calories  Float    @default(0)
+  protein   Float    @default(0)
+  carbs     Float    @default(0)
+  fat       Float    @default(0)
+  notes     String?
+  date      String   // YYYY-MM-DD
+  createdAt DateTime @default(now())
+}
+
+model WaterIntake {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  glasses       Int      @default(0)
+  targetGlasses Int      @default(12)
+  date          String   // YYYY-MM-DD
+  updatedAt     DateTime @updatedAt
+
+  @@unique([userId, date])
+}
+
+model WeightRecord {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weight    Float
+  date      String   // YYYY-MM-DD
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model Habit {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title             String
+  completed         Boolean  @default(false)
+  streak            Int      @default(0)
+  lastCompletedDate String?
+  createdAt         DateTime @default(now())
+}
+
+model SleepRecord {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sleepTime     String
+  wakeTime      String
+  durationHours Float    @default(8.0)
+  qualityScore  Int      @default(8)
+  date          String   // YYYY-MM-DD
+  notes         String?
+  createdAt     DateTime @default(now())
+}
+
+model Goal {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  category     String   @default("Fitness")
+  targetValue  Float
+  currentValue Float    @default(0)
+  unit         String   @default("kg")
+  deadline     String?
+  status       String   @default("in_progress")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ProgressPhoto {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  viewType  String   // Front, Side, Back
+  imageUrl  String
+  date      String   // YYYY-MM-DD
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model Journal {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mood      String   @default("😊 Energetic")
+  content   String
+  date      String   // YYYY-MM-DD
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NotificationSettings {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutTime   String   @default("08:00")
+  waterInterval Int      @default(60)
+  mealTime      String   @default("13:00")
+  sleepTime     String   @default("22:30")
+  weightCheck   String   @default("07:00")
+  enabled       Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
+}
