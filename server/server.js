@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import authRoutes from './routes/auth.routes.js';
@@ -26,10 +27,11 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Production CORS setup: accepts localhost in dev & process.env.CLIENT_URL in production
+// Production CORS setup: accepts localhost in dev & Vercel production frontend
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
+  'https://fit-track-xt92-fittrack8.vercel.app',
   process.env.CLIENT_URL
 ].filter(Boolean);
 
@@ -38,7 +40,7 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
-      callback(null, true); // Permissive for production deployment
+      callback(null, true);
     }
   },
   credentials: true
@@ -50,7 +52,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
+// REST API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/workouts', workoutRoutes);
@@ -62,6 +64,7 @@ app.use('/api/sleep', sleepRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/photos', photoRoutes);
 app.use('/api/journal', journalRoutes);
+app.use('/api/notification', notificationRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports', reportRoutes);
 
@@ -69,6 +72,18 @@ app.use('/api/reports', reportRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'FitTrack Production API is operational 🚀' });
 });
+
+// Single-Domain Support: Serve compiled React static frontend directly from Express if present
+const clientDistPath = path.join(__dirname, '../client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 // Error handling middleware
 app.use(errorHandler);
