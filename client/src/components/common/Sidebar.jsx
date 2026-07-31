@@ -7,6 +7,7 @@ import {
   Droplets,
   Scale,
   CheckSquare,
+  ListTodo,
   Moon,
   Target,
   Camera,
@@ -22,6 +23,7 @@ import { useToast } from '../../context/ToastContext';
 
 const navItems = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { name: 'To-Do List', path: '/todos', icon: ListTodo },
   { name: 'Workouts', path: '/workouts', icon: Dumbbell },
   { name: 'Diet Notes', path: '/diet', icon: UtensilsCrossed },
   { name: 'Water Tracker', path: '/water', icon: Droplets },

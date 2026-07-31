@@ -7,6 +7,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
+import TodoList from '../pages/TodoList';
 import Workouts from '../pages/Workouts';
 import Diet from '../pages/Diet';
 import Water from '../pages/Water';
@@ -37,6 +38,7 @@ export default function AppRoutes() {
         }
       >
         <Route path="/" element={<Dashboard />} />
+        <Route path="/todos" element={<TodoList />} />
         <Route path="/workouts" element={<Workouts />} />
         <Route path="/diet" element={<Diet />} />
         <Route path="/water" element={<Water />} />

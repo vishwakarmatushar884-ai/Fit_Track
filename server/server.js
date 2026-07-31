@@ -18,6 +18,7 @@ import photoRoutes from './routes/photo.routes.js';
 import journalRoutes from './routes/journal.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 import reportRoutes from './routes/report.routes.js';
+import todoRoutes from './routes/todo.routes.js';
 import { errorHandler } from './middleware/error.middleware.js';
 
 dotenv.config();
@@ -67,6 +68,7 @@ const mountRoutes = (prefix) => {
   app.use(`${prefix}/journal`, journalRoutes);
   app.use(`${prefix}/notifications`, notificationRoutes);
   app.use(`${prefix}/reports`, reportRoutes);
+  app.use(`${prefix}/todos`, todoRoutes);
 };
 
 // Mount routes on /api AND root fallback so requests never 404
@@ -86,7 +88,7 @@ const clientDistPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/auth') || req.path.startsWith('/uploads')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/auth') || req.path.startsWith('/todos') || req.path.startsWith('/uploads')) {
       return next();
     }
     res.sendFile(path.join(clientDistPath, 'index.html'));
