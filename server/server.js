@@ -27,7 +27,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Production CORS setup: accepts localhost in dev & Vercel production frontend
+// Production CORS setup: accepts localhost, explicit Vercel frontend URL, and dynamic CLIENT_URL
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
@@ -37,7 +37,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || process.env.NODE_ENV !== 'production') {
       callback(null, true);
     } else {
       callback(null, true);
