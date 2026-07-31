@@ -1,17 +1,13 @@
 import axios from 'axios';
 
-// Ensure base URL always correctly includes /api/
+// Live Production Render Backend API URL
+const PRODUCTION_API = 'https://fit-track-4.onrender.com/api/';
+
 const getBaseURL = () => {
-  let url = import.meta.env.VITE_API_URL || 'https://fit-track-4.onrender.com/api';
-  
-  // Clean up trailing slashes
-  url = url.replace(/\/+$/, '');
-  
-  if (!url.endsWith('/api')) {
-    url = url + '/api';
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return '/api/';
   }
-  
-  return url + '/';
+  return PRODUCTION_API;
 };
 
 const API = axios.create({
@@ -21,9 +17,9 @@ const API = axios.create({
   }
 });
 
-// Request interceptor: fix leading slashes and attach JWT token
+// Request interceptor to normalize URL paths and attach JWT token
 API.interceptors.request.use((config) => {
-  // If config.url starts with '/', remove it so Axios appends it relative to /api/
+  // Strip leading slash if present to guarantee proper concatenation with /api/
   if (config.url && config.url.startsWith('/')) {
     config.url = config.url.substring(1);
   }
