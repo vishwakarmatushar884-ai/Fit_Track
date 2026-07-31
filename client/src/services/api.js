@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-// Determine default base URL: use environment variable if present, or fallback to live Render backend API
+// In production, target the live Render backend server directly to bypass any host protection walls
 const getBaseURL = () => {
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  // In browser production mode on Vercel or custom domain
+  // When running on live production Vercel deployment or external browsers
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
     return 'https://fit-track-4.onrender.com/api';
   }
