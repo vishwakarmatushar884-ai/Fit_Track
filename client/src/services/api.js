@@ -1,15 +1,17 @@
 import axios from 'axios';
 
-// In production, target the live Render backend server directly to bypass any host protection walls
+// Ensure base URL always correctly includes /api/
 const getBaseURL = () => {
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+  let url = import.meta.env.VITE_API_URL || 'https://fit-track-4.onrender.com/api';
+  
+  // Clean up trailing slashes
+  url = url.replace(/\/+$/, '');
+  
+  if (!url.endsWith('/api')) {
+    url = url + '/api';
   }
-  // When running on live production Vercel deployment or external browsers
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return 'https://fit-track-4.onrender.com/api';
-  }
-  return '/api';
+  
+  return url + '/';
 };
 
 const API = axios.create({
@@ -19,8 +21,13 @@ const API = axios.create({
   }
 });
 
-// Request interceptor to attach JWT token
+// Request interceptor: fix leading slashes and attach JWT token
 API.interceptors.request.use((config) => {
+  // If config.url starts with '/', remove it so Axios appends it relative to /api/
+  if (config.url && config.url.startsWith('/')) {
+    config.url = config.url.substring(1);
+  }
+
   const token = localStorage.getItem('fittrack_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

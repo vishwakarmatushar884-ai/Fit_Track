@@ -52,24 +52,32 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// REST API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/workouts', workoutRoutes);
-app.use('/api/diet', dietRoutes);
-app.use('/api/water', waterRoutes);
-app.use('/api/weight', weightRoutes);
-app.use('/api/habits', habitRoutes);
-app.use('/api/sleep', sleepRoutes);
-app.use('/api/goals', goalRoutes);
-app.use('/api/photos', photoRoutes);
-app.use('/api/journal', journalRoutes);
-app.use('/api/notification', notificationRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/reports', reportRoutes);
+// Helper to mount routes under given path prefix
+const mountRoutes = (prefix) => {
+  app.use(`${prefix}/auth`, authRoutes);
+  app.use(`${prefix}/dashboard`, dashboardRoutes);
+  app.use(`${prefix}/workouts`, workoutRoutes);
+  app.use(`${prefix}/diet`, dietRoutes);
+  app.use(`${prefix}/water`, waterRoutes);
+  app.use(`${prefix}/weight`, weightRoutes);
+  app.use(`${prefix}/habits`, habitRoutes);
+  app.use(`${prefix}/sleep`, sleepRoutes);
+  app.use(`${prefix}/goals`, goalRoutes);
+  app.use(`${prefix}/photos`, photoRoutes);
+  app.use(`${prefix}/journal`, journalRoutes);
+  app.use(`${prefix}/notifications`, notificationRoutes);
+  app.use(`${prefix}/reports`, reportRoutes);
+};
+
+// Mount routes on /api AND root fallback so requests never 404
+mountRoutes('/api');
+mountRoutes('');
 
 // Healthcheck
 app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'FitTrack Production API is operational 🚀' });
+});
+app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'FitTrack Production API is operational 🚀' });
 });
 
@@ -78,7 +86,7 @@ const clientDistPath = path.join(__dirname, '../client/dist');
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    if (req.path.startsWith('/api') || req.path.startsWith('/auth') || req.path.startsWith('/uploads')) {
       return next();
     }
     res.sendFile(path.join(clientDistPath, 'index.html'));
