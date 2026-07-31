@@ -5,22 +5,27 @@ import { useToast } from '../context/ToastContext';
 import { LogIn, Mail, Lock, ArrowRight } from 'lucide-react';
 
 export default function Login() {
-  const [email, setEmail] = useState('demo@fittrack.com');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, setUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setLoading(true);
     try {
-      await login(email, password);
+      const data = await login(email, password);
       showToast('Welcome back to FitTrack!', 'success');
+      setUser(data.user);
       navigate('/');
     } catch (error) {
-      showToast(error.response?.data?.message || 'Login failed', 'error');
+      console.error('Login submit error:', error);
+      const errMsg = error.response?.data?.message || error.message || 'Login failed';
+      showToast(errMsg, 'error');
     } finally {
       setLoading(false);
     }
@@ -45,7 +50,7 @@ export default function Login() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="demo@fittrack.com"
+              placeholder="alex@fittrack.com"
               className="w-full pl-11 pr-4 py-3 bg-slate-800/80 border border-slate-700/60 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500 transition-colors"
             />
           </div>

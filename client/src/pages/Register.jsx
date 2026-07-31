@@ -9,19 +9,24 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, setUser } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
+
     setLoading(true);
     try {
-      await register(name, email, password);
+      const data = await register(name, email, password);
       showToast('Account created successfully!', 'success');
+      setUser(data.user);
       navigate('/');
     } catch (error) {
-      showToast(error.response?.data?.message || 'Registration failed', 'error');
+      console.error('Registration submit error:', error);
+      const errMsg = error.response?.data?.message || error.message || 'Registration failed';
+      showToast(errMsg, 'error');
     } finally {
       setLoading(false);
     }
