@@ -2,7 +2,7 @@ services:
   - type: web
     name: fittrack-backend
     env: node
-    buildCommand: npm install && npx prisma generate && npx prisma db push
+    buildCommand: cd ../client && npm install && npm run build && cd ../server && npm install && npx prisma generate && npx prisma db push
     startCommand: npm start
     envVars:
       - key: NODE_ENV
