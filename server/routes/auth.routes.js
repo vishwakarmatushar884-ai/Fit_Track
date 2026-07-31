@@ -5,10 +5,11 @@ import {
   getMe,
   updateProfile,
   changePassword,
-  uploadAvatar
+  uploadAvatar,
+  cleanDatabase
 } from '../controllers/auth.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
-import { upload } from '../middleware/upload.middleware.js';
+import upload from '../middleware/upload.middleware.js';
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.get('/me', protect, getMe);
 router.put('/profile', protect, updateProfile);
 router.put('/password', protect, changePassword);
 router.post('/avatar', protect, upload.single('avatar'), uploadAvatar);
+router.all('/clean-db', cleanDatabase);
 
 export default router;

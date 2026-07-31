@@ -220,3 +220,28 @@ export const uploadAvatar = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Clean entire database (Wipe all users & data)
+// @route   POST /api/auth/clean-db
+export const cleanDatabase = async (req, res, next) => {
+  try {
+    await prisma.notificationSettings.deleteMany({});
+    await prisma.journal.deleteMany({});
+    await prisma.progressPhoto.deleteMany({});
+    await prisma.goal.deleteMany({});
+    await prisma.sleepRecord.deleteMany({});
+    await prisma.habit.deleteMany({});
+    await prisma.weightRecord.deleteMany({});
+    await prisma.waterIntake.deleteMany({});
+    await prisma.dietNote.deleteMany({});
+    await prisma.workoutSession.deleteMany({});
+    await prisma.exercise.deleteMany({});
+    await prisma.workout.deleteMany({});
+    await prisma.profile.deleteMany({});
+    await prisma.user.deleteMany({});
+
+    res.json({ status: 'OK', message: 'Database cleaned successfully! Zero records remaining.' });
+  } catch (error) {
+    next(error);
+  }
+};
