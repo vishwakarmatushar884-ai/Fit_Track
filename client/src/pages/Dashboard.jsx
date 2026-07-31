@@ -13,6 +13,7 @@ import {
   Plus,
   ArrowUpRight,
   CheckCircle2,
+  ListTodo,
   TrendingDown,
   TrendingUp
 } from 'lucide-react';
@@ -88,6 +89,12 @@ export default function Dashboard() {
 
         <div className="flex flex-wrap items-center gap-3 relative z-10">
           <Link
+            to="/todos"
+            className="px-4 py-2.5 rounded-xl bg-indigo-600/90 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/20 flex items-center gap-2 transition-all border border-indigo-400/30"
+          >
+            <ListTodo className="w-4 h-4" /> To-Do List
+          </Link>
+          <Link
             to="/workouts"
             className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all"
           >
@@ -108,172 +115,189 @@ export default function Dashboard() {
       {/* Modern Dashboard Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Today's Calories Burned */}
-        <div className="glass-card flex flex-col justify-between">
+        <div className="glass-panel p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Calories Burned
             </span>
-            <div className="p-2.5 rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
               <Flame className="w-5 h-5" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="text-3xl font-extrabold text-slate-100">
-              {metrics?.caloriesBurnedToday || 0} <span className="text-base font-normal text-slate-400">kcal</span>
-            </div>
-            <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-              <Zap className="w-3.5 h-3.5 text-orange-400" />
-              {metrics?.todayWorkoutCount || 0} session(s) completed today
-            </p>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-slate-100">
+              {metrics?.caloriesBurnedToday || 0}
+            </span>
+            <span className="text-sm font-semibold text-slate-400">kcal</span>
+          </div>
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+            <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <span>{metrics?.sessionsCountToday || 0} session(s) completed today</span>
           </div>
         </div>
 
         {/* Card 2: Today's Calories Consumed */}
-        <div className="glass-card flex flex-col justify-between">
+        <div className="glass-panel p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Calories Consumed
             </span>
-            <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
               <Utensils className="w-5 h-5" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="text-3xl font-extrabold text-slate-100">
-              {metrics?.caloriesConsumedToday || 0} <span className="text-base font-normal text-slate-400">kcal</span>
-            </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Net balance: <span className={calorieBalance > 0 ? 'text-amber-400 font-semibold' : 'text-emerald-400 font-semibold'}>
-                {calorieBalance > 0 ? `+${calorieBalance}` : calorieBalance} kcal
-              </span>
-            </p>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-slate-100">
+              {metrics?.caloriesConsumedToday || 0}
+            </span>
+            <span className="text-sm font-semibold text-slate-400">kcal</span>
+          </div>
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+            <span>Net balance:</span>
+            <span className={`font-semibold ${calorieBalance <= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+              {calorieBalance > 0 ? `+${calorieBalance}` : calorieBalance} kcal
+            </span>
           </div>
         </div>
 
         {/* Card 3: Water Intake */}
-        <div className="glass-card flex flex-col justify-between">
+        <div className="glass-panel p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Water Intake
             </span>
-            <div className="p-2.5 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+            <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
               <Droplets className="w-5 h-5" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="text-3xl font-extrabold text-slate-100">
-              {metrics?.waterGlasses || 0} / {metrics?.waterTargetGlasses || 12} <span className="text-base font-normal text-slate-400">glasses</span>
-            </div>
-            {/* Progress bar */}
-            <div className="w-full bg-slate-800 rounded-full h-2 mt-2 overflow-hidden">
-              <div
-                className="bg-sky-400 h-2 rounded-full transition-all duration-500"
-                style={{
-                  width: `${Math.min(100, Math.round(((metrics?.waterGlasses || 0) / (metrics?.waterTargetGlasses || 12)) * 100))}%`
-                }}
-              />
-            </div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-slate-100">
+              {Math.round((metrics?.waterToday || 0) / 250)}
+            </span>
+            <span className="text-sm font-semibold text-slate-400">/ 12 glasses</span>
+          </div>
+          <div className="mt-3 w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+            <div
+              className="bg-sky-400 h-full transition-all duration-500"
+              style={{ width: `${Math.min(100, Math.round(((metrics?.waterToday || 0) / 3000) * 100))}%` }}
+            />
           </div>
         </div>
 
-        {/* Card 4: Current Weight & Target */}
-        <div className="glass-card flex flex-col justify-between">
+        {/* Card 4: Current Weight */}
+        <div className="glass-panel p-5 relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-300">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Current Weight
             </span>
-            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
               <Scale className="w-5 h-5" />
             </div>
           </div>
-          <div className="mt-4">
-            <div className="text-3xl font-extrabold text-slate-100">
-              {metrics?.currentWeight || 70} <span className="text-base font-normal text-slate-400">kg</span>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="text-3xl font-extrabold text-slate-100">
+              {metrics?.latestWeight ? `${metrics.latestWeight}` : (profile?.weight || 70)}
+            </span>
+            <span className="text-sm font-semibold text-slate-400">kg</span>
+          </div>
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+            <span>Target:</span>
+            <span className="font-semibold text-emerald-400">{profile?.targetWeight || 68} kg</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Row & Widgets */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Widget 1: Today's Workout Quick Tile */}
+        <div className="glass-panel p-6 flex flex-col justify-between hover:border-slate-700 transition-all">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <CheckCircle2 className="w-5 h-5" />
             </div>
-            <p className="text-xs text-slate-400 mt-1 flex items-center gap-1">
-              Target: <span className="text-emerald-400 font-semibold">{metrics?.targetWeight || 68} kg</span>
+            <Link to="/workouts" className="text-xs font-semibold text-emerald-400 hover:underline flex items-center gap-1">
+              View All <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <div>
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Today's Workout</h3>
+            <p className="text-lg font-bold text-slate-100 mt-1">
+              {metrics?.sessionsCountToday > 0 ? 'Completed 🎉' : 'Pending Today'}
+            </p>
+          </div>
+        </div>
+
+        {/* Widget 2: Habit Streak */}
+        <div className="glass-panel p-6 flex flex-col justify-between hover:border-slate-700 transition-all">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <Zap className="w-5 h-5" />
+            </div>
+            <Link to="/habits" className="text-xs font-semibold text-emerald-400 hover:underline flex items-center gap-1">
+              Track Habits <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <div>
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Habit Streak</h3>
+            <p className="text-lg font-bold text-slate-100 mt-1">
+              {metrics?.habitStreak || 0} Days Consecutive
+            </p>
+          </div>
+        </div>
+
+        {/* Widget 3: Fitness To-Do List Quick Access */}
+        <div className="glass-panel p-6 flex flex-col justify-between hover:border-indigo-500/40 transition-all">
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <ListTodo className="w-5 h-5" />
+            </div>
+            <Link to="/todos" className="text-xs font-semibold text-indigo-400 hover:underline flex items-center gap-1">
+              Open List <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+          <div>
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fitness To-Do List</h3>
+            <p className="text-lg font-bold text-slate-100 mt-1">
+              Manage Daily Tasks
             </p>
           </div>
         </div>
       </div>
 
-      {/* Secondary Metrics Row: Workout Status, Streak, Sleep */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        {/* Workout Status */}
-        <div className="glass-card flex items-center gap-4">
-          <div className={`p-3.5 rounded-2xl ${metrics?.workoutCompletedToday ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'}`}>
-            <CheckCircle2 className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Today's Workout</p>
-            <p className="text-base font-bold text-slate-100 mt-0.5">
-              {metrics?.workoutCompletedToday ? 'Completed 🎉' : 'Pending Today'}
-            </p>
-          </div>
-        </div>
-
-        {/* Streak Counter */}
-        <div className="glass-card flex items-center gap-4">
-          <div className="p-3.5 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30">
-            <Zap className="w-6 h-6 fill-amber-400" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Habit Streak</p>
-            <p className="text-base font-bold text-slate-100 mt-0.5">
-              {metrics?.currentStreak || 0} Days Consecutive
-            </p>
-          </div>
-        </div>
-
-        {/* Sleep Hours */}
-        <div className="glass-card flex items-center gap-4">
-          <div className="p-3.5 rounded-2xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-            <Moon className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Sleep Duration</p>
-            <p className="text-base font-bold text-slate-100 mt-0.5">
-              {metrics?.sleepHoursToday || 0} Hours Logged
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Weekly Summary Interactive Chart */}
+      {/* Weekly Energy Chart */}
       <div className="glass-panel p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h2 className="text-lg font-bold text-slate-100">Weekly Energy Overview</h2>
-            <p className="text-xs text-slate-400">Comparison of Calories Burned vs. Consumed over the past 7 days</p>
-          </div>
-          <div className="flex items-center gap-4 text-xs font-semibold">
-            <span className="flex items-center gap-1.5 text-emerald-400">
-              <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" /> Burned
-            </span>
-            <span className="flex items-center gap-1.5 text-amber-400">
-              <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" /> Consumed
-            </span>
+            <p className="text-xs text-slate-400 mt-0.5">Comparison of Calories Burned vs. Consumed over the past 7 days</p>
           </div>
         </div>
 
         <div className="h-80 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={weeklySummary || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              <XAxis dataKey="day" stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-              <YAxis stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 12 }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#0f172a',
-                  borderColor: '#334155',
-                  borderRadius: '12px',
-                  color: '#f8fafc'
-                }}
-              />
-              <Bar dataKey="caloriesBurned" name="Burned (kcal)" fill="#10b981" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="caloriesConsumed" name="Consumed (kcal)" fill="#f59e0b" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          {weeklySummary && weeklySummary.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={weeklySummary} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.5} />
+                <XAxis dataKey="day" stroke="#94a3b8" fontSize={12} tickLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#0f172a',
+                    borderColor: '#334155',
+                    borderRadius: '0.75rem',
+                    color: '#f8fafc'
+                  }}
+                />
+                <Legend wrapperStyle={{ paddingTop: '20px' }} />
+                <Bar dataKey="burned" name="Burned (kcal)" fill="#10b981" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="consumed" name="Consumed (kcal)" fill="#f59e0b" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex items-center justify-center text-slate-500 text-sm">
+              No weekly data available yet. Start logging workouts and meals!
+            </div>
+          )}
         </div>
       </div>
     </div>
