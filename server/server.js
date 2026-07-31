@@ -83,15 +83,26 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'FitTrack Production API is operational 🚀' });
 });
 
-// Single-Domain Support: Serve compiled React static frontend directly from Express if present
-const clientDistPath = path.join(__dirname, '../client/dist');
-if (fs.existsSync(clientDistPath)) {
-  app.use(express.static(clientDistPath));
+// Single-Domain Support: Serve compiled React static frontend directly from Express
+const staticPaths = [
+  path.join(__dirname, 'public'),
+  path.join(__dirname, '../client/dist')
+];
+
+let publicPath = staticPaths.find((p) => fs.existsSync(p));
+
+if (publicPath) {
+  app.use(express.static(publicPath));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/auth') || req.path.startsWith('/todos') || req.path.startsWith('/uploads')) {
+    if (
+      req.path.startsWith('/api') ||
+      req.path.startsWith('/auth') ||
+      req.path.startsWith('/todos') ||
+      req.path.startsWith('/uploads')
+    ) {
       return next();
     }
-    res.sendFile(path.join(clientDistPath, 'index.html'));
+    res.sendFile(path.join(publicPath, 'index.html'));
   });
 }
 
